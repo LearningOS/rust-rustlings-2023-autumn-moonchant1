@@ -17,10 +17,10 @@ struct Person {
 // when the provided string is not convertible into a Person object
 impl Default for Person {
     fn default() -> Person {
-        Person {
-            name: String::from("John"),
-            age: 30,
-        }
+            Person {
+                name: String::from("John"),
+                age: 30,
+            }
     }
 }
 
@@ -40,10 +40,21 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of
 // Person Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
-
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
+        if s.is_empty() {
+            Default::default()
+        } else {
+            match s.split_once(",")  {
+                Some((name, _)) if name.is_empty() => Default::default(),
+                Some((name, age_str)) => match  age_str.parse::<usize>() {
+                    Ok(age) => Person { name: name.to_string(), age: age, },
+                    Err(_) => Default::default(),
+                    
+                }
+                None => Person::default(),
+            } 
+        }
     }
 }
 
@@ -55,6 +66,7 @@ fn main() {
     println!("{:?}", p1);
     println!("{:?}", p2);
 }
+
 
 #[cfg(test)]
 mod tests {
